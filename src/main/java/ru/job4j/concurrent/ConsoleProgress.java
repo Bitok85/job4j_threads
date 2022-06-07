@@ -8,7 +8,7 @@ public class ConsoleProgress implements Runnable {
             String[] process = {"\\", "|", "/"};
             int index = 0;
             while (!Thread.currentThread().isInterrupted()) {
-                if (index == 3) {
+                if (index == process.length) {
                     index = 0;
                 }
                 System.out.println("\r load : " + process[index]);
