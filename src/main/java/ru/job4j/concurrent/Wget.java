@@ -39,14 +39,13 @@ public class Wget implements Runnable {
                     startTime = System.currentTimeMillis();
                 }
             }
-        } catch (IOException | InterruptedException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            } else {
-                e.printStackTrace();
-            }
-
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+            Thread.currentThread().interrupt();
+        } catch (IOException e2) {
+            e2.printStackTrace();
         }
+
     }
 
     private static void validateArgs(String[] arr) {
