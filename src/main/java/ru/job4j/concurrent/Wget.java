@@ -2,6 +2,7 @@ package ru.job4j.concurrent;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 
 public class Wget implements Runnable {
@@ -38,8 +39,13 @@ public class Wget implements Runnable {
                     startTime = System.currentTimeMillis();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | InterruptedException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            } else {
+                e.printStackTrace();
+            }
+
         }
     }
 
