@@ -3,38 +3,36 @@ package ru.job4j.concurrent;
 import java.io.*;
 import java.util.function.Predicate;
 
-public class ParseFile {
+final public class ParseFile {
 
-    private final FileModel file;
-    private final File destFile;
+    private static final char UNICODE = 0x80;
+    private static final char ASCII_CHARS = 127;
 
-    public ParseFile(FileModel file, File destFile) {
+    private final File file;
+
+    public ParseFile(File file) {
         this.file = file;
-        this.destFile = destFile;
     }
 
     public String getContent(Predicate<Character> filter) throws IOException {
-        String result;
-        try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(file.getFile()))) {
-            StringBuilder output = new StringBuilder();
+        StringBuilder output = new StringBuilder();
+        try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(file))) {
             int data;
             while ((data = in.read()) != -1) {
                 if (filter.test((char) data)) {
                     output.append((char) data);
                 }
             }
-            result = output.toString();
         }
-        return result;
+        return output.toString();
     }
 
-    public void saveContent(String content) throws IOException {
-        try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(destFile))) {
-            for (int i = 0; i < content.length(); i++) {
-                out.write(content.charAt(i));
-            }
-        }
+    public String getPureContent() throws IOException {
+        return getContent(ch -> ch <= ASCII_CHARS);
     }
 
+    public String getAllExceptUnicode() throws IOException {
+        return getContent(ch -> ch < UNICODE);
+    }
 
 }
