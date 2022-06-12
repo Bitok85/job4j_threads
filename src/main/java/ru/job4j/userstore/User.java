@@ -1,4 +1,4 @@
-package ru.job4j.concurrent;
+package ru.job4j.userstore;
 
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
@@ -6,14 +6,14 @@ import net.jcip.annotations.ThreadSafe;
 import java.util.Objects;
 
 @ThreadSafe
-final public class UserStore {
+final public class User {
 
     @GuardedBy("this")
     private final int id;
     @GuardedBy("this")
     private int amount;
 
-    public UserStore(int id, int amount) {
+    public User(int id, int amount) {
         this.id = id;
         this.amount = amount;
     }
@@ -38,8 +38,8 @@ final public class UserStore {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        UserStore userStore = (UserStore) o;
-        return id == userStore.id;
+        User user = (User) o;
+        return id == user.id;
     }
 
     @Override
