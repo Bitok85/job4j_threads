@@ -12,57 +12,33 @@ public class UserStorage {
     private Map<Integer, User> users = new HashMap<>();
 
     public boolean add(User user) {
-        boolean rsl = false;
-        if (!users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-            rsl = true;
-            LOG.info("User with {} id successfully added.", user.getId());
-        } else {
-            LOG.info("User with {} id is already exists.", user.getId());
-        }
-        return rsl;
+        return users.putIfAbsent(user.getId(), user) == null;
     }
 
-    public boolean update(User user, int amountChange) {
-        boolean rsl = false;
-        if (users.containsKey(user.getId())) {
-            int newAmount = users.get(user.getId()).getAmount() + amountChange;
-            if (newAmount >= 0) {
-               users.get(user.getId()).setAmount(newAmount);
-               rsl = true;
-               LOG.info(
-                       "User with {} id changed amount from {} to {}.", user.getId(), users.get(user.getId()).getAmount(), newAmount
-               );
-            } else {
-                LOG.info("Can't change for {}, because new amount goes under 0.", amountChange);
-            }
-        } else {
-            LOG.info("User with {} id isn't exists.", user.getId());
-        }
-        return rsl;
+    public boolean update(User user) {
+        return users.replace(user.getId(), user) != null;
     }
 
     public boolean delete(User user) {
-        boolean rsl = false;
-        if (users.containsKey(user.getId())) {
-            users.remove(user.getId());
-            rsl = true;
-            LOG.info("User with {} id removed.", user.getId());
-        } else {
-            LOG.info("User with {} id isn't exists.", user.getId());
-        }
-        return rsl;
+       return users.remove(user.getId(), user);
     }
 
     public boolean transfer(int fromId, int toId, int amount) {
-        boolean rsl = false;
-        if (users.containsKey(fromId) && users.containsKey(toId)) {
-            if (update(users.get(fromId), -amount) && update(users.get(toId), amount)) {
+        boolean rsl;
+        if (users.get(fromId) != null && users.get(toId) != null) {
+            if (users.get(fromId).getAmount() >= amount) {
+                int newAmountFrom = users.get(fromId).getAmount() - amount;
+                int newAmountTo = users.get(toId).getAmount() + amount;
+                users.get(fromId).setAmount(newAmountFrom);
+                users.get(toId).setAmount(newAmountTo);
                 rsl = true;
-                LOG.info("Transaction done successfully");
             } else {
-                LOG.info("Transaction denied");
+                LOG.info("Not enough money");
+                rsl = false;
             }
+        } else {
+            LOG.info("One of users doesn't exist");
+            rsl = false;
         }
         return rsl;
     }
