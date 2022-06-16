@@ -9,7 +9,7 @@ import java.util.Map;
 public class UserStorage {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserStorage.class.getName());
-    private Map<Integer, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
 
     public boolean add(User user) {
         return users.putIfAbsent(user.getId(), user) == null;
