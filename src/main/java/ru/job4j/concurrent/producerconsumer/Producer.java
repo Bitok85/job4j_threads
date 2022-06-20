@@ -15,8 +15,12 @@ public class Producer<T> implements Runnable {
 
     @Override
     public void run() {
-        while (produceIndex < source.size()) {
-            queue.offer(produce());
+        try {
+            while (produceIndex < source.size()) {
+                queue.offer(produce());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 

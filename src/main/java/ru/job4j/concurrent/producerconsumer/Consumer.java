@@ -14,8 +14,13 @@ public class Consumer<T> implements Runnable {
 
     @Override
     public void run() {
-        while (queue.size() > 0) {
-            destination.add(queue.poll());
+        try {
+            while (queue.size() > 0) {
+                destination.add(queue.poll());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
+
     }
 }

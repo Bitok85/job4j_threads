@@ -14,7 +14,7 @@ public class SimpleBlockingQueueTest {
     @Ignore
     @Test
     public void whenProduceAndConsumeFewTimes() {
-        SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>();
+        SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(3);
         List<Integer> source = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9);
         List<Integer> destination = new ArrayList<>();
         Thread pThread = new Thread(() -> new Producer<>(source, queue));
