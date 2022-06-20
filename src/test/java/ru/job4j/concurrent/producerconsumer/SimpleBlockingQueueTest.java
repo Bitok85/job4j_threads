@@ -45,7 +45,5 @@ public class SimpleBlockingQueueTest {
         consumer.interrupt();
         consumer.join();
         assertThat(buffer, is(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9)));
-
     }
-
 }
