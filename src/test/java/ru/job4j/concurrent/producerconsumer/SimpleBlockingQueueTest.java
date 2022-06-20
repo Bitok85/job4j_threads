@@ -21,8 +21,8 @@ public class SimpleBlockingQueueTest {
         Thread cThread = new Thread(() -> new Consumer<>(queue, destination));
         try {
             pThread.start();
-            pThread.join();
             cThread.start();
+            pThread.join();
             cThread.join();
         }  catch (Exception e) {
             e.printStackTrace();
