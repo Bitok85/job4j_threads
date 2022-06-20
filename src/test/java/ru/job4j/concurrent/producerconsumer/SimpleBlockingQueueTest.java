@@ -46,4 +46,54 @@ public class SimpleBlockingQueueTest {
         consumer.join();
         assertThat(buffer, is(List.of(1, 2, 3, 4, 5, 6, 7, 8, 9)));
     }
+
+    @Test
+    public void whenTwoProducersAndOneConsumer() throws InterruptedException {
+        final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(3);
+        final CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
+        Thread firstProd = new Thread(
+                () -> {
+                    try {
+                        for (int i = 1; i <= 6; i++) {
+                            queue.offer(i);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        Thread.currentThread().interrupt();
+                    }
+                }
+        );
+        Thread secondProd = new Thread(
+                () -> {
+                    try {
+                        for (int i = 7; i <= 12; i++) {
+                            queue.offer(i);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        Thread.currentThread().interrupt();
+                    }
+                }
+        );
+        Thread consumer = new Thread(
+                () -> {
+                    while (!queue.isEmpty() || !Thread.currentThread().isInterrupted()) {
+                        try {
+                            buffer.add(queue.poll());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+        );
+        firstProd.start();
+        secondProd.start();
+        consumer.start();
+        firstProd.join();
+        secondProd.join();
+        consumer.interrupt();
+        consumer.join();
+        assertThat(buffer.size(), is(12));
+    }
 }
