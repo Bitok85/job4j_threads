@@ -1,5 +1,6 @@
 package ru.job4j.concurrent.cas;
 
+import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -9,20 +10,19 @@ public class CASCount {
 
 private final AtomicReference<Integer> count = new AtomicReference<>();
 
+    public CASCount(int startValue) {
+        count.set(startValue);
+    }
+
     public void increment() {
-        int delta = 1;
-        if (count.get() == null) {
-            count.set(delta);
-            return;
-        }
-        int value = count.get();
-        int newValue = value + delta;
+        int value;
         do {
-            count.set(newValue);
-        } while (count.compareAndSet(value, newValue));
+            value = count.get();
+        } while (!count.compareAndSet(value, value + 1));
     }
 
     public int get() {
         return count.get();
     }
 }
+
