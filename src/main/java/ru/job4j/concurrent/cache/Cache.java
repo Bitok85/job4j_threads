@@ -30,4 +30,5 @@ public class Cache {
     public boolean delete(Base model) {
         return memory.remove(model.getId()) != null;
     }
+
 }

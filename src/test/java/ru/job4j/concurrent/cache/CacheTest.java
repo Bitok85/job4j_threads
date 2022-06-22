@@ -39,5 +39,4 @@ public class CacheTest {
         cache.add(model1);
         assertFalse(cache.update(model2));
     }
-
 }
