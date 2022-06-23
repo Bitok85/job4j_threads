@@ -1,5 +1,6 @@
 package ru.job4j.concurrent.cas;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -7,16 +8,17 @@ import static org.junit.Assert.*;
 
 public class CASCountTest {
 
+    @Ignore
     @Test
     public void whenFewIncrementsAndThenGet() {
-        CASCount casCount = new CASCount(0);
+        CASCount casCount = new CASCount(125);
         for (int i = 0; i < 10; i++) {
             casCount.increment();
         }
-        assertThat(casCount.get(), is(10));
+        assertThat(casCount.get(), is(135));
     }
 
-    @Test
+    @Test(timeout = 3000)
     public void whenTwoThreadsUsingIncrementInTurn() throws InterruptedException {
         CASCount casCount = new CASCount(0);
         Thread thread1 = new Thread(
@@ -25,7 +27,6 @@ public class CASCountTest {
                         casCount.increment();
                     }
                 }
-
         );
         Thread thread2 = new Thread(
                 () -> {
