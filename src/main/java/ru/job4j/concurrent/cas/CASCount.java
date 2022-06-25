@@ -3,6 +3,7 @@ package ru.job4j.concurrent.cas;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @ThreadSafe
@@ -15,10 +16,11 @@ private final AtomicReference<Integer> count = new AtomicReference<>();
     }
 
     public void increment() {
+        AtomicInteger atomicInteger = new AtomicInteger(count.get());
         int value;
         do {
-            value = count.get();
-        } while (count.compareAndSet(value, value + 1) && !(count.get() == value + 1));
+            value = atomicInteger.intValue();
+        } while (count.compareAndSet(value, value + 1));
     }
 
     public int get() {
