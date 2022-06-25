@@ -21,6 +21,7 @@ private final AtomicReference<Integer> count = new AtomicReference<>();
         do {
             value = atomicInteger.intValue();
         } while (count.compareAndSet(value, value + 1));
+
     }
 
     public int get() {
