@@ -9,22 +9,20 @@ import java.util.concurrent.atomic.AtomicReference;
 @ThreadSafe
 public class CASCount {
 
-private final AtomicReference<AtomicInteger> count = new AtomicReference<>();
+    private final AtomicInteger count = new AtomicInteger(0);
 
-    public CASCount(AtomicInteger startValue) {
+    public CASCount(int startValue) {
         count.set(startValue);
     }
-    private AtomicInteger atomicInteger = new AtomicInteger();
 
     public void increment() {
+        int value;
         do {
-            atomicInteger = count.get();
-        } while (count.compareAndSet(atomicInteger, new AtomicInteger(atomicInteger.get() + 1)));
-
+            value = count.get();
+        } while (count.compareAndSet(value, value + 1) && !(count.get() == value + 1));
     }
 
-    public AtomicInteger get() {
+    public int get() {
         return count.get();
     }
 }
-
