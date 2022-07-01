@@ -8,25 +8,31 @@ import java.util.List;
 class ThreadPool {
     private static final int BLOCKING_QUE_SIZE = 5;
     private static final int THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors();
-    private final List<Thread> treads = new LinkedList<>();
+    private final List<Thread> threads = new LinkedList<>();
     private final SimpleBlockingQueue<Runnable> tasks = new SimpleBlockingQueue<>(BLOCKING_QUE_SIZE);
 
 
+
     public ThreadPool() {
-      for (int i = 0; i < THREAD_POOL_SIZE; i++) {
-          treads.add(new Thread(
-                  () -> {
-                      try {
-                          while (!tasks.isEmpty()) {
-                              Runnable task = tasks.poll();
-                              task.run();
-                          }
-                      } catch (InterruptedException e) {
-                          e.printStackTrace();
-                      }
-                  }
-          ));
-      }
+        for (int i = 0; i < THREAD_POOL_SIZE; i++) {
+            this.threads.add(new Thread(
+                    () -> {
+                        while (true) {
+                            while (!Thread.currentThread().isInterrupted()) {
+                                try {
+                                    Runnable task = tasks.poll();
+                                    task.run();
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+            ));
+        }
+
+
     }
 
     public synchronized void work(Runnable job) throws InterruptedException {
@@ -34,6 +40,33 @@ class ThreadPool {
     }
 
     public void shutDown() {
-        treads.forEach(Thread::interrupt);
+        threads.forEach(Thread::interrupt);
+    }
+
+    public static void main(String[] args) {
+        ThreadPool threadPool = new ThreadPool();
+        try  {
+            threadPool.work(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Execute " + Thread.currentThread().getName());
+                }
+            });
+            threadPool.work(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Execute " + Thread.currentThread().getName());
+                }
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadPool.shutDown();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(Thread.currentThread().getName());
     }
 }
