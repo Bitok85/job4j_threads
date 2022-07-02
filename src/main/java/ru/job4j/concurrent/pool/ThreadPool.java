@@ -15,24 +15,22 @@ class ThreadPool {
 
     public ThreadPool() {
         for (int i = 0; i < THREAD_POOL_SIZE; i++) {
-            this.threads.add(new Thread(
+            Thread thread = new Thread(
                     () -> {
-                        while (true) {
-                            while (!Thread.currentThread().isInterrupted()) {
-                                try {
-                                    Runnable task = tasks.poll();
-                                    task.run();
-                                } catch (InterruptedException e) {
-                                    Thread.currentThread().interrupt();
-                                    e.printStackTrace();
-                                }
+                        while (!Thread.currentThread().isInterrupted()) {
+                            try {
+                                Runnable task = tasks.poll();
+                                task.run();
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                                e.printStackTrace();
                             }
                         }
                     }
-            ));
+            );
+            threads.add(thread);
+            thread.start();
         }
-
-
     }
 
     public synchronized void work(Runnable job) throws InterruptedException {
