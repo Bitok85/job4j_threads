@@ -19,21 +19,29 @@ public class ParallelLinearSearch<T> extends RecursiveTask<Integer> {
         this.to = to;
     }
 
+    public static Integer search(Object[] array, Object value, int from, int to) {
+        ForkJoinPool forkJoinPool = new ForkJoinPool();
+        return forkJoinPool.invoke(new ParallelLinearSearch<>(array, value, from, to));
+    }
+
     @Override
     protected Integer compute() {
         if (to - from <= MIN_ARR_LENGTH) {
-            for (int i = from; i < to; i++) {
+            Integer rsl = null;
+            for (int i = from; i <= to; i++) {
                 if (value.equals(array[i])) {
-                    return i;
+                    rsl = i;
                 }
             }
+            return rsl;
+        } else {
+            int mid = (to + from) / 2;
+            ParallelLinearSearch<T> leftSearch = new ParallelLinearSearch<>(array, value, from, mid);
+            ParallelLinearSearch<T> rightSearch = new ParallelLinearSearch<>(array, value, mid + 1, to);
+            leftSearch.fork();
+            rightSearch.fork();
+            return resultChoice(leftSearch.join(), rightSearch.join());
         }
-        int mid = (to - from) / 2;
-        ParallelLinearSearch<T> leftSearch = new ParallelLinearSearch<>(array, value, from, mid);
-        ParallelLinearSearch<T> rightSearch = new ParallelLinearSearch<>(array, value, mid + 1, to);
-        leftSearch.fork();
-        rightSearch.fork();
-        return resultChoice(leftSearch.join(), rightSearch.join());
     }
 
 
@@ -41,16 +49,18 @@ public class ParallelLinearSearch<T> extends RecursiveTask<Integer> {
         int rsl = -1;
         if (left != null) {
             rsl = left;
-        } else if (right != null) {
+        }
+        if (right != null) {
             rsl = right;
         }
         return rsl;
     }
 
     public static void main(String[] args) {
-        Integer[] arr = {1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 11, 18, 19, 20, 21};
+        Integer[] arr = {1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25};
         ForkJoinPool forkJoinPool = new ForkJoinPool();
         System.out.println(forkJoinPool.invoke(
-                new ParallelLinearSearch<Integer>(arr, 11, 0, arr.length - 1)));
+                new ParallelLinearSearch<>(arr, 16, 0, arr.length - 1)));
     }
+
 }
