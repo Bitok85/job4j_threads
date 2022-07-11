@@ -27,35 +27,23 @@ public class ParallelLinearSearch<T> extends RecursiveTask<Integer> {
     @Override
     protected Integer compute() {
         if (to - from <= MIN_ARR_LENGTH) {
-            return valueCheck(array, from, to);
+            return valueCheck();
         }
         int mid = (to + from) / 2;
         ParallelLinearSearch<T> leftSearch = new ParallelLinearSearch<>(array, value, from, mid);
         ParallelLinearSearch<T> rightSearch = new ParallelLinearSearch<>(array, value, mid + 1, to);
         leftSearch.fork();
         rightSearch.fork();
-        return resultChoice(leftSearch.join(), rightSearch.join());
+        return Math.max(leftSearch.join(), rightSearch.join());
 
     }
 
-    private Integer valueCheck(T[] array, int from, int to) {
+    private int valueCheck() {
         for (int i = from; i <= to; i++) {
             if (value.equals(array[i])) {
                 return i;
             }
         }
         return -1;
-    }
-
-
-    private static int resultChoice(Integer left, Integer right) {
-        int rsl = -1;
-        if (left != null) {
-            rsl = left;
-        }
-        if (right != null) {
-            rsl = right;
-        }
-        return rsl;
     }
 }
