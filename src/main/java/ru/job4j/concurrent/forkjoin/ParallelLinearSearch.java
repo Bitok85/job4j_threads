@@ -58,5 +58,4 @@ public class ParallelLinearSearch<T> extends RecursiveTask<Integer> {
         }
         return rsl;
     }
-
 }
