@@ -1,7 +1,11 @@
 package ru.job4j.concurrent.async;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class RowColSum {
 
@@ -69,11 +73,52 @@ public class RowColSum {
         return sums;
     }
 
-    public static Sums[] asyncSum(int[][] matrix) {
-        return null;
+    public static Sums[] asyncSum(int[][] matrix) throws ExecutionException, InterruptedException {
+        Sums[] sums = new Sums[matrix.length];
+        Map<Integer, CompletableFuture<Integer>> rowFutures = new HashMap<>();
+        Map<Integer, CompletableFuture<Integer>> colFutures = new HashMap<>();
+        for (int i = 0; i < matrix.length; i++) {
+            rowFutures.put(i, getRowSum(matrix, i));
+            colFutures.put(i, getColSum(matrix, i));
+        }
+        for (int j = 0; j < matrix.length; j++) {
+            sums[j] = new Sums(0, 0);
+            sums[j].setRowSum(rowFutures.get(j).get());
+            sums[j].setColSum(colFutures.get(j).get());
+        }
+        return sums;
     }
 
-    private static CompletableFuture<Integer> getTask(int[][] matrix) {
-        return null;
+    private static CompletableFuture<Integer> getRowSum(int[][] matrix, int row) {
+        return CompletableFuture.supplyAsync(() -> {
+            int sum = 0;
+            for (int i = 0; i < matrix.length; i++) {
+                sum += matrix[row][i];
+            }
+            return sum;
+        });
     }
+
+    private static CompletableFuture<Integer> getColSum(int[][] matrix, int col) {
+        return CompletableFuture.supplyAsync(() -> {
+            int sum = 0;
+            for (int i = 0; i < matrix.length; i++) {
+                sum += matrix[i][col];
+            }
+            return sum;
+        });
+    }
+
+    public static int[][] generateQuadMatrix(int matrixLineSize) {
+        int[][] rsl = new int[matrixLineSize][];
+        Random random = new Random();
+        for (int i = 0; i < matrixLineSize; i++) {
+            rsl[i] = new int[matrixLineSize];
+            for (int j = 0; j < matrixLineSize; j++) {
+                rsl[i][j] = random.nextInt(100);
+            }
+        }
+        return rsl;
+    }
+
 }
