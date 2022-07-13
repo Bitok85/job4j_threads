@@ -39,15 +39,13 @@ public class RowColSumTest {
                 new RowColSum.Sums(15, 15),
                 new RowColSum.Sums(24, 18)
         };
-        final long startTime = System.currentTimeMillis();
         assertArrayEquals(expected, RowColSum.asyncSum(matrix));
-        System.out.println(System.currentTimeMillis() - startTime);
     }
 
     @Ignore
     @Test
     public void whenBigMatrixThenAsyncRunFaster() throws Exception {
-        int[][] matrix = RowColSum.generateQuadMatrix(1000);
+        int[][] matrix = RowColSum.generateQuadMatrix(10000);
 
         final long startSeqTime = System.currentTimeMillis();
         RowColSum.Sums[] sums1 = RowColSum.sum(matrix);
