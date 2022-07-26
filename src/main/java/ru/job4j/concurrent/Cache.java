@@ -2,6 +2,8 @@ package ru.job4j.concurrent;
 
 /**
  * delete changes
+ *
+ * add smth new
  */
 
 public class Cache {
