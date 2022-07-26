@@ -5,3 +5,5 @@
 [![codecov](https://codecov.io/gh/Bitok85/job4j_threads/branch/master/graph/badge.svg?token=MWLD57OARE)](https://codecov.io/gh/Bitok85/job4j_threads)
 
 какие-то изменения для GitStash
+
+В курсе производилась работа с ветками git.
